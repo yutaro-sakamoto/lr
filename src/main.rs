@@ -1,23 +1,29 @@
 use std::collections::HashSet;
 use std::hash::Hash;
 
-struct DFA<State: Eq + Hash + Copy, Alphabet: Eq> {
+struct DFA<State: Eq + Hash + Copy, Alphabet: Eq + Copy> {
     final_state_set: HashSet<State>,
     first_state: State,
-    transition: fn(State, &Alphabet) -> State
+    transition: fn(State, Alphabet) -> State
 }
 
-impl <State: Eq + Hash + Copy, Alphabet: Eq> DFA<State, Alphabet> {
+impl <State: Eq + Hash + Copy, Alphabet: Eq + Copy> DFA<State, Alphabet> {
     fn accept(&self, input: &Vec<Alphabet>) -> bool {
         let mut state: State = self.first_state;
         for a in input {
-            state = (self.transition)(state, &a)
+            state = (self.transition)(state, *a)
         }
         self.final_state_set.contains(&state)
     }
 }
 
-fn transition(state: char, input: &i32) -> char {
+struct NFA<State: Eq + Hash + Copy, Alphabet: Eq + Copy> {
+    final_state_set: HashSet<State>,
+    first_state: State,
+    transition: fn(State, Alphabet) -> HashSet<State>
+}
+
+fn transition(state: char, input: i32) -> char {
     match state {
         'p' => match input {
              0 => 'p',
